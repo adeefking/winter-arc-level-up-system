@@ -1,0 +1,49 @@
+const DAYS=["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"];
+const GOALS=[
+["Wake Up & Reset","05:00 — 05:10"],["Outdoor Workout / Cardio","05:10 — 06:00"],["Shower + Breakfast","06:00 — 06:45"],
+["College Hours","06:45 — 14:00"],["Return + Lunch / Snack","14:00 — 14:45"],["Trading Session","14:45 — 15:45"],
+["College Homework","15:45 — 17:15"],["Chinese Practice","17:15 — 17:45"],["Evening Workout","17:45 — 18:30"],
+["Quran Pak Tilawat","18:30 — 19:15"],["Book Reading","19:15 — 20:00"],["Dinner + Family","20:00 — 20:45"],["Meditation","20:45 — 21:00"]];
+const MONTHS=[{key:"2026-10",name:"OCTOBER 2026",short:"OCT",start:2},{key:"2026-11",name:"NOVEMBER 2026",short:"NOV",start:1},{key:"2026-12",name:"DECEMBER 2026",short:"DEC",start:1}];
+const KEY="winterArcUltraV4";
+let db=JSON.parse(localStorage.getItem(KEY)||"null")||{days:{},months:{}}, selectedMonth=null, selectedDate=null, selectedReview=null;
+
+function save(){localStorage.setItem(KEY,JSON.stringify(db));homeStats()}
+function go(id){document.querySelectorAll(".page").forEach(x=>x.classList.remove("active"));document.getElementById(id).classList.add("active");
+ if(id==="home")homeStats(); if(id==="days")renderDays(); if(id==="overview")renderMonths(); if(id==="mission")renderMission(); if(id==="month")renderMonth();}
+function homeStats(){let pts=0,cleared=0;DAYS.forEach(d=>{let s=db.days[d];if(s){pts+=s.checks.filter(Boolean).length*10;if(s.checks.every(Boolean)&&s.submitted)cleared++}});document.getElementById("homePts").textContent=pts;document.getElementById("homeDays").textContent=cleared}
+function renderDays(){let e=document.getElementById("daysGrid");e.innerHTML="";DAYS.forEach((d,i)=>{let s=db.days[d]||{checks:Array(13).fill(false),submitted:false},n=s.checks.filter(Boolean).length,b=document.createElement("button");b.className="day"+(n===13&&s.submitted?" done":"");b.onclick=()=>{selectedDay=d;go("mission")};b.innerHTML=`<small>DAY ${String(i+1).padStart(2,"0")}</small><h3>${d}</h3><p>${n}/13 missions checked</p><b>${n*10} PTS</b><i class="dot"></i>`;e.appendChild(b)})}
+let selectedDay="Monday";
+function renderMission(){let s=db.days[selectedDay]||{checks:Array(13).fill(false),submitted:false};document.getElementById("missionTitle").textContent=selectedDay.toUpperCase();let e=document.getElementById("tasks");e.innerHTML="";GOALS.forEach((g,i)=>{let l=document.createElement("label");l.className="task"+(s.checks[i]?" checked":"");l.innerHTML=`<input type="checkbox" ${s.checks[i]?"checked":""}><span class="n">${String(i+1).padStart(2,"0")}</span><div><h3>${g[0]}</h3><p>${g[1]}</p></div><b class="pts">+10</b>`;l.querySelector("input").onchange=x=>{s.checks[i]=x.target.checked;l.classList.toggle("checked",x.target.checked);updateMission()};e.appendChild(l)});updateMission()}
+function updateMission(){let s=db.days[selectedDay]||{checks:Array(13).fill(false)},n=s.checks.filter(Boolean).length;document.getElementById("livePts").textContent=n*10;document.getElementById("missionCount").textContent=`${n} / 13 COMPLETE`;document.getElementById("missionPct").textContent=Math.round(n/13*100)+"%";document.getElementById("missionBar").style.width=n/13*100+"%"}
+function submitDay(){let s=db.days[selectedDay]||{checks:Array(13).fill(false),submitted:false};s.submitted=true;db.days[selectedDay]=s;save();let n=s.checks.filter(Boolean).length,p=n*10,pct=Math.round(n/13*100);openResult(`${selectedDay.toUpperCase()} / RESULT`,pct===100?"MISSION CLEARED":pct>=70?"SOLID PROGRESS":pct?"PARTIAL PROGRESS":"NO MISSIONS COMPLETED",p,pct,pct===100?"All daily missions are complete. Your reward zone is unlocked for tonight.":pct>=70?"Strong day. Keep the remaining weak spots in mind for the next run.":pct?"Some progress was made. Use this review to plan the next day.":"No missions were checked. Reset, plan tomorrow and protect your sleep.",pct===100)}
+function openResult(tag,title,score,pct,text,reset=false){document.getElementById("mTag").textContent=tag;document.getElementById("mTitle").textContent=title;document.getElementById("mScore").textContent=score;document.getElementById("mBar").style.width=pct+"%";document.getElementById("mText").textContent=text;document.getElementById("modal").classList.add("open");window.resultReset=reset}
+function closeModal(){document.getElementById("modal").classList.remove("open");if(window.resultReset){db.days[selectedDay]={checks:Array(13).fill(false),submitted:false};save()}if(selectedMonth)go("month");else go("days")}
+function renderMonths(){let e=document.getElementById("months");e.innerHTML="";MONTHS.forEach(m=>{let dates=getDates(m),reviewed=dates.filter(d=>db.months[d.key]?.review).length,pts=dates.reduce((a,d)=>a+(Number(db.months[d.key]?.points)||0),0),avg=reviewed?Math.round(pts/reviewed):0,b=document.createElement("button");b.className="month-card";b.onclick=()=>{selectedMonth=m;go("month")};b.innerHTML=`<small>WINTER ARC / ${m.short}</small><h3>${m.name.split(" ")[0]}</h3><p class="range">${formatDate(dates[0])} → ${formatDate(dates[dates.length-1])} · ${dates.length} active days</p><div class="month-stat"><div><b>${reviewed}/${dates.length}</b><em> REVIEWED</em></div><div><b>${avg}</b><em> AVG PTS</em></div></div><span class="open">OPEN MONTH →</span>`;e.appendChild(b)})}
+function getDates(m){let a=[];let last=new Date(2026,Number(m.key.slice(5))-1,calendarDays(m));for(let d=m.start;d<=last.getDate();d++){let x=new Date(2026,last.getMonth(),d),dow=x.getDay();if(dow!==0)a.push({key:`${m.key}-${String(d).padStart(2,"0")}`,date:x})}return a}
+function calendarDays(m){return new Date(2026,Number(m.key.slice(5)),0).getDate()}
+function formatDate(x){return x.date.toLocaleDateString("en-US",{month:"short",day:"numeric"})}
+function renderMonth(){let m=selectedMonth,dates=getDates(m);document.getElementById("monthTitle").textContent=m.name;let done=dates.filter(d=>db.months[d.key]?.review).length,pct=Math.round(done/dates.length*100);document.getElementById("monthPct").textContent=pct;document.getElementById("monthProgressText").textContent=`${done} / ${dates.length} DAYS REVIEWED`;document.getElementById("monthProgressBar").style.width=pct+"%";let e=document.getElementById("dateGrid");e.innerHTML="";dates.forEach(d=>{let s=db.months[d.key]||{},c=document.createElement("button");c.className="date-card "+(s.review||"");c.onclick=()=>openDayReview(d);let day=d.date.toLocaleDateString("en-US",{weekday:"short"}).toUpperCase();c.innerHTML=`<span class="dow">${day}</span><div class="date">${d.date.getDate()} ${m.short}</div><div class="p">${s.points??"—"}</div><div class="r">${reviewLabel(s.review)}</div><i class="review-dot"></i>${s.review?'<button class="card-delete" title="Delete review" onclick="event.stopPropagation();deleteReviewByKey(\''+d.key+'\')">×</button>':''}`;e.appendChild(c)})}
+function reviewLabel(r){return r==="solid"?"SOLID WORK ✓":r==="partial"?"PARTIAL ✓":r==="needs"?"NEEDS WORK ✓":"NOT REVIEWED"}
+function openDayReview(d){selectedDate=d;let s=db.months[d.key]||{};selectedReview=s.review||null;document.getElementById("dTitle").textContent=d.date.toLocaleDateString("en-US",{weekday:"long",month:"short",day:"numeric"}).toUpperCase();document.getElementById("pointInput").value=s.points??"";document.querySelectorAll(".review-options button").forEach(b=>b.classList.toggle("selected",b.dataset.review===selectedReview));document.getElementById("dayModal").classList.add("open")}
+function chooseReview(r){selectedReview=r;document.querySelectorAll(".review-options button").forEach(b=>b.classList.toggle("selected",b.dataset.review===r))}
+function saveDayReview(){let p=Number(document.getElementById("pointInput").value);if(!Number.isFinite(p)||p<0||p>130){toast("ENTER POINTS FROM 0 TO 130");return}if(p%10!==0){toast("USE 10-POINT STEPS");return}let auto=p>=100?"solid":p>=50?"partial":"needs";selectedReview=selectedReview||auto;db.months[selectedDate.key]={points:p,review:selectedReview,savedAt:new Date().toISOString()};save();document.getElementById("dayModal").classList.remove("open");renderMonth();toast("DAILY REVIEW SAVED PERMANENTLY");if(isMonthComplete())setTimeout(()=>showMonthResult(false),450)}
+function isMonthComplete(){return getDates(selectedMonth).every(d=>db.months[d.key]?.review)}
+function showMonthResult(force){let dates=getDates(selectedMonth),reviewed=dates.filter(d=>db.months[d.key]?.review),total=reviewed.reduce((a,d)=>a+(Number(db.months[d.key]?.points)||0),0),avg=reviewed.length?Math.round(total/reviewed.length):0,solid=reviewed.filter(d=>db.months[d.key]?.review==="solid").length,partial=reviewed.filter(d=>db.months[d.key]?.review==="partial").length,needs=reviewed.filter(d=>db.months[d.key]?.review==="needs").length;if(!force&&!isMonthComplete())return;let title=avg>=100?"MONTH CLEARED":avg>=50?"MONTH REVIEWED":"MONTH NEEDS A RESET";let text=`${selectedMonth.name}: ${reviewed.length}/${dates.length} active days reviewed. Average: ${avg}/130 points. Reviews — Solid: ${solid}, Partial: ${partial}, Needs Work: ${needs}.`;openResult(`${selectedMonth.short} / OVERALL REVIEW`,title,avg,Math.round(avg/130*100),text,false)}
+
+function deleteDayReview(){
+ if(!selectedDate)return;
+ if(!db.months[selectedDate.key]){document.getElementById("dayModal").classList.remove("open");return}
+ if(!confirm("Delete this saved daily review?"))return;
+ delete db.months[selectedDate.key]; save();
+ document.getElementById("dayModal").classList.remove("open");
+ renderMonth(); toast("DAILY REVIEW DELETED");
+}
+function deleteReviewByKey(key){
+ if(!db.months[key])return;
+ if(!confirm("Delete this saved daily review?"))return;
+ delete db.months[key]; save(); renderMonth(); toast("DAILY REVIEW DELETED");
+}
+
+function toast(t){let e=document.getElementById("toast");e.textContent=t;e.classList.add("show");clearTimeout(window.toastTimer);window.toastTimer=setTimeout(()=>e.classList.remove("show"),2300)}
+homeStats();

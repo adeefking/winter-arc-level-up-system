@@ -1,0 +1,138 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>LEVEL UP // WINTER ARC</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;600;700;800;900&family=Rajdhani:wght@500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="fx-smoke"></div><div class="fx-grid"></div><div class="fx-grain"></div>
+<main>
+
+<section class="page active" id="intro">
+  <div class="orbit"><i></i><i></i><i></i></div>
+  <div class="intro-copy">
+    <small>SYSTEM ONLINE // 2026</small>
+    <h1>LEVEL UP<br><span>N // WINTER ARC</span></h1>
+    <p>DISCIPLINE IS THE NEW LUXURY.</p>
+    <button class="btn primary" onclick="go('home')">ENTER THE ARC <b>↗</b></button>
+  </div>
+</section>
+
+<section class="page" id="home">
+  <header class="top"><div class="logo">WINTER<span>ARC</span><small>MISSION CONTROL</small></div><div class="status"><i></i> SYSTEM ACTIVE</div></header>
+  <div class="home">
+    <div class="hero">
+      <small>PERSONAL PERFORMANCE PROTOCOL</small>
+      <h2>BUILD THE<br><span>VERSION</span><br>YOU WANT.</h2>
+      <p>Complete daily missions, submit your score, track your Winter Arc month by month and keep every review permanently saved.</p>
+      <div class="actions">
+        <button class="btn primary" onclick="go('days')">DAILY MISSIONS <b>→</b></button>
+        <button class="btn" onclick="go('overview')">ARC OVERVIEW <b>↗</b></button>
+        <button class="btn" onclick="go('library')">ARC LIBRARY <b>↗</b></button>
+      </div>
+    </div>
+    <div class="core">
+      <div class="core-ring"><div><strong id="homePts">0</strong><small>TOTAL PTS</small></div></div>
+      <div class="stats"><div><b id="homeDays">0</b><small>DAYS CLEARED</small></div><div><b>03</b><small>MONTHS</small></div><div><b>10</b><small>PTS / TASK</small></div></div>
+    </div>
+  </div>
+  <nav class="bottom"><button onclick="go('days')">01 / MISSIONS</button><button onclick="go('overview')">02 / ARC OVERVIEW</button><button onclick="go('library')">03 / LIBRARY</button></nav>
+</section>
+
+<section class="page" id="days">
+  <div class="head"><button class="back" onclick="go('home')">← HOME</button><div><small>MISSION SELECT</small><h2>CHOOSE YOUR DAY</h2></div><em>MON — SAT</em></div>
+  <div class="days" id="daysGrid"></div>
+</section>
+
+<section class="page" id="mission">
+  <div class="head"><button class="back" onclick="go('days')">← DAYS</button><div><small>DAILY MISSION</small><h2 id="missionTitle">MONDAY</h2></div><strong class="score"><b id="livePts">0</b> / 130</strong></div>
+  <div class="mission">
+    <div class="bar"><i id="missionBar"></i></div><div class="meta"><span id="missionCount">0 / 13</span><span id="missionPct">0%</span></div>
+    <div class="tasks" id="tasks"></div>
+    <button class="submit" onclick="submitDay()">SUBMIT DAY <b>↗</b></button>
+  </div>
+</section>
+
+<section class="page" id="overview">
+  <div class="head"><button class="back" onclick="go('home')">← HOME</button><div><small>WINTER ARC TRACKER</small><h2>MONTHLY OVERVIEW</h2></div><em>02 OCT → 31 DEC</em></div>
+  <div class="months" id="months"></div>
+  <p class="note">SUNDAYS ARE REST / RESET DAYS — THEY ARE INTENTIONALLY SKIPPED.</p>
+</section>
+
+<section class="page" id="month">
+  <div class="head"><button class="back" onclick="go('overview')">← OVERVIEW</button><div><small id="monthKicker">MONTH TRACKER</small><h2 id="monthTitle">OCTOBER 2026</h2></div><strong class="score"><b id="monthPct">0</b>%</strong></div>
+  <div class="month-shell">
+    <div class="month-top"><div><span id="monthProgressText">0 / 0 DAYS REVIEWED</span><i id="monthProgressBar"></i></div><button class="mini" onclick="showMonthResult(true)">VIEW RESULT</button></div>
+    <div class="date-grid" id="dateGrid"></div>
+  </div>
+</section>
+
+
+<section class="page" id="library">
+  <div class="head"><button class="back" onclick="go('home')">← HOME</button><div><small>SUPPORT SYSTEM</small><h2>ARC LIBRARY</h2></div><em>02 MODULES</em></div>
+  <div class="library-grid">
+    <button class="library-card" onclick="go('workout')">
+      <div class="library-art dumbbell-art"><span></span><b></b><i></i></div>
+      <div><small>01 / CONDITIONING</small><h3>WORKOUT</h3><p>Six-day split, dumbbell visuals and daily face routine.</p><strong>OPEN WORKOUT →</strong></div>
+    </button>
+    <button class="library-card" onclick="go('books')">
+      <div class="library-art book-art"><div>ARC<br>READ</div></div>
+      <div><small>02 / KNOWLEDGE</small><h3>BOOKS</h3><p>Monthly reading protocol with your selected books.</p><strong>OPEN BOOKS →</strong></div>
+    </button>
+  </div>
+</section>
+
+<section class="page" id="workout">
+  <div class="head"><button class="back" onclick="go('home')">← HOME</button><div><small>CONDITIONING PROTOCOL</small><h2>WORKOUT SPLIT</h2></div><em>06 DAYS</em></div>
+  <div class="work-grid">
+    <article><div class="gym chest"><span></span><b></b><i></i></div><div><small>MON + THU</small><h3>CHEST <b>+</b> TRICEPS</h3><p>Pressing strength • controlled reps • clean form</p></div></article>
+    <article><div class="gym back"><span></span><b></b><i></i></div><div><small>TUE + FRI</small><h3>BACK <b>+</b> BICEPS</h3><p>Rows • pulls • curls • controlled movement</p></div></article>
+    <article><div class="gym legs"><span></span><b></b><i></i></div><div><small>WED + SAT</small><h3>LEGS <b>+</b> SHOULDERS</h3><p>Squat pattern • stability • shoulder work</p></div></article>
+    <article><div class="gym dumb"><div>◆</div></div><div><small>DAILY</small><h3>FACE ROUTINE</h3><p>Short posture, jaw and facial mobility routine.</p></div></article>
+  </div>
+</section>
+
+<section class="page" id="books">
+  <div class="head"><button class="back" onclick="go('home')">← HOME</button><div><small>KNOWLEDGE PROTOCOL</small><h2>READING ARC</h2></div><em>10 PAGES / DAY</em></div>
+  <div class="books">
+    <article><div class="cover c1"><small>THE 33</small><b>STRATEGIES<br>OF WAR</b><i>ROBERT GREENE</i></div><span>MONTH 01</span><h3>The 33 Strategies of War</h3></article>
+    <article><div class="cover c2"><small>THE LAWS</small><b>OF HUMAN<br>NATURE</b><i>ROBERT GREENE</i></div><span>MONTH 02</span><h3>The Laws of Human Nature</h3></article>
+    <article><div class="cover c3"><small>THINK AND</small><b>GROW<br>RICH</b><i>NAPOLEON HILL</i></div><span>MONTH 03</span><h3>Think and Grow Rich</h3></article>
+    <article><div class="cover c4"><small>THE DEFINITIVE</small><b>BOOK OF<br>BODY LANGUAGE</b><i>PEASE</i></div><span>SUNDAY</span><h3>The Definitive Book of Body Language</h3></article>
+  </div>
+</section>
+</main>
+
+<div class="modal" id="modal">
+ <div class="modal-card">
+   <span id="mTag">RESULT</span><h2 id="mTitle">DAY RESULT</h2>
+   <div class="big"><b id="mScore">0</b><small id="mUnit">PTS</small></div>
+   <div class="mbar"><i id="mBar"></i></div>
+   <p id="mText"></p>
+   <button class="btn primary" onclick="closeModal()">CONTINUE <b>→</b></button>
+ </div>
+</div>
+<div class="modal" id="dayModal">
+ <div class="modal-card day-form">
+  <span id="dTag">DAILY REVIEW</span><h2 id="dTitle">OCT 02</h2>
+  <label>ENTER YOUR POINTS <input id="pointInput" type="number" min="0" max="130" step="10" placeholder="0 — 130"></label>
+  <div class="review-options">
+   <button data-review="solid" onclick="chooseReview('solid')"><b>✓</b><strong>SOLID WORK</strong><small>100–130 points</small></button>
+   <button data-review="partial" onclick="chooseReview('partial')"><b>✓</b><strong>PARTIAL</strong><small>50–90 points</small></button>
+   <button data-review="needs" onclick="chooseReview('needs')"><b>✓</b><strong>NEEDS WORK</strong><small>0–40 points</small></button>
+  </div>
+  <div class="review-actions">
+    <button class="submit" onclick="saveDayReview()">SAVE DAILY REVIEW <b>↗</b></button>
+    <button class="delete-review" onclick="deleteDayReview()">DELETE REVIEW <b>×</b></button>
+  </div>
+ </div>
+</div>
+<div class="toast" id="toast"></div>
+<script src="script.js"></script>
+</body>
+</html>
